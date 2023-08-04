@@ -1,5 +1,5 @@
 import * as THREE from "../node_modules/three/build/three.module.js";
-import WebGL from "../node_modules/three/addons/capabilities/WebGL.js";
+import WebGL from "../node_modules/three/examples/jsm/capabilities/WebGL.js";
 
 console.log("main.js loaded successfully!");
 const scene = new THREE.Scene();
@@ -10,7 +10,7 @@ const camera = new THREE.PerspectiveCamera(
   1000,
 );
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
