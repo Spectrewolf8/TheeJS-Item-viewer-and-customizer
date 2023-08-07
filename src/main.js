@@ -1,8 +1,15 @@
-import * as THREE from "../node_modules/three/build/three.module.js";
-import WebGL from "../node_modules/three/examples/jsm/capabilities/WebGL.js";
+// import * as THREE from "../node_modules/three/build/three.module.js";
+// import WebGL from "../node_modules/three/examples/jsm/capabilities/WebGL.js";
+// import GLTFLoader from "../node_modules/three/examples/jsm/loaders/GLTFLoader.js";
+
+import * as THREE from "three";
+import WebGL from "three/addons/capabilities/WebGL.js";
+console.log("Importing GLTF loader");
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 console.log("main.js loaded successfully!");
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(231, 231, 231);
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -34,3 +41,23 @@ if (WebGL.isWebGLAvailable()) {
   const warning = WebGL.getWebGLErrorMessage();
   document.getElementById("container").appendChild(warning);
 }
+console.log("loading 3D model");
+const loader = new GLTFLoader();
+// loader.load("../models/shoes_by_amor.glb", function (gltf) {
+//   scene.add(gltf.scene);
+// });
+
+loader.load(
+  "../models/shoes_by_amor.glb",
+  function (gltf) {
+    const shoes = gltf.scene; // sword 3D object is loaded
+    shoes.scale.set(1, 1, 1);
+    shoes.position.y = 0;
+    scene.add(shoes);
+  },
+  undefined,
+  function (error) {
+    console.error(error);
+  },
+);
+console.log("3D model loaded");

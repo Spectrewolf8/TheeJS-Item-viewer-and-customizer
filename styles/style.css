@@ -1,10 +1,18 @@
-.heading-0 {
-  color: blueviolet;
-  font: normal;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 30px;
-}
 .body-0 {
   margin: 0px;
-  background-color: #e7e7e7;
+  background-color: rgb(255, 255, 255);
+}
+
+.info {
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  text-align: center;
+  z-index: 100;
+  display: block;
+
+  color: #8a2be2;
+  font: bold;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 30px;
 }
