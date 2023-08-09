@@ -8,9 +8,9 @@ console.log("Imports successful!");
 
 //creating a scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(231, 231, 231);
+scene.background = new THREE.Color("#141414");
 
-//creating rendered
+//creating renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -25,17 +25,30 @@ const camera = new THREE.PerspectiveCamera(
 
 camera.position.z = 3;
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 1;
+controls.enableZoom = true;
+controls.enablePan = false;
 controls.update();
 
+//creating helper grid
+const size = 100;
+const divisions = 50;
+const gridHelper = new THREE.GridHelper(size, divisions);
+gridHelper.position.y = -1;
+scene.add(gridHelper);
+
 //creating light sources
-const light0 = new THREE.PointLight(0xff0000, 500, 100);
-light0.position.set(-20, 0, 20);
+const light0 = new THREE.PointLight("#ffffff", 700, 100);
+light0.position.set(-20, +10, +20);
 light0.rotateX = 45;
+light0.rotateY = -15;
 scene.add(light0);
 
-const light1 = new THREE.PointLight(0xff0000, 200, 100);
+const light1 = new THREE.PointLight("#ffffff", 100, 100);
 light1.position.set(+30, -10, -20);
 light1.rotateX = -45;
+light1.rotateX = 10;
 scene.add(light1);
 
 //loading 3D model and setting its attriutes
@@ -45,7 +58,18 @@ const loader = new GLTFLoader();
 loader.load(
   "../models/sneaker_shoe.glb",
   function (gltf) {
-    const shoes = gltf.scene; // sword 3D object is loaded
+    const shoes = gltf.scene;
+    // console.log(shoes.children.find((x) => x.name == "red"));
+    var newMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+    shoes.traverse((element) => {
+      if (element.isMesh) {
+        console.log(element);
+
+        // if ((element.name == "R_SHOE_R_Shoe_0")) {
+        //   element.visible = false;
+        // }
+      }
+    });
     shoes.scale.set(10, 10, 10);
     shoes.position.y = 0;
     shoes.position.x = 0;
@@ -67,6 +91,7 @@ function animate() {
 
 //checking browser's WebGL compatibility before animating
 if (WebGL.isWebGLAvailable()) {
+  requestAnimationFrame(animate);
   animate();
   console.log("WebGL support detected");
 } else {
