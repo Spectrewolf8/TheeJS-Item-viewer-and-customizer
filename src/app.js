@@ -264,34 +264,14 @@ function init() {
     },
   );
 
-  // setting up CSS2DRenderer for labels
-  const labelRenderer = new CSS2DRenderer();
-  labelRenderer.setSize(window.innerWidth, window.innerHeight);
-  labelRenderer.domElement.style.position = "absolute";
-  labelRenderer.domElement.style.top = "0px";
-  document.body.appendChild(labelRenderer.domElement);
-
-  // Create a container for labels
-  const labelContainer = document.createElement("div");
-  labelRenderer.domElement.appendChild(labelContainer);
-  labelRenderer.domElement.style.pointerEvents = "none";
-
-  // setting up label for model's element hovered
-  const elementDiv = document.createElement("div");
-  elementDiv.className = "label-0";
-  elementDiv.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-  elementDiv.style.color = "white";
-  elementDiv.style.padding = "5px";
-  elementDiv.style.borderRadius = "5px";
-  elementDiv.style.position = "absolute";
-  elementDiv.style.pointerEvents = "none";
-  const elementLabel = new CSS2DObject(elementDiv);
+  //setting up tooltip
+  const tooltipElement = document.getElementById("tooltip");
 
   //declaring ray caster and mouse
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2(1, 1);
 
-  //add mouse event listener to the html(DOM)
+  //adding mouse event listener to the html(DOM) for mouse movements
   document.addEventListener("mousemove", onMouseMove);
   function onMouseMove(event) {
     event.preventDefault();
@@ -299,34 +279,73 @@ function init() {
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   }
 
+  //adding mouse event listener mouse events(clicking, dragging)
+  let mouseClicked = false;
+  let isDragging = false;
+  let startPosition = new THREE.Vector2(0, 0);
+
+  window.addEventListener("mousemove", function (event) {
+    if (!isDragging) {
+      const deltaX = Math.abs(startPosition.x - event.clientX);
+      const deltaY = Math.abs(startPosition.y - event.clientY);
+      if (deltaX > 1 || deltaY > 1) {
+        isDragging = true;
+      }
+    }
+  });
+
+  window.addEventListener("mousedown", function (event) {
+    startPosition.x = event.clientX;
+    startPosition.y = event.clientY;
+    isDragging = false;
+  });
+
+  window.addEventListener("mouseup", function (event) {
+    if (!isDragging) {
+      mouseClicked = true;
+    } else {
+      mouseClicked = false;
+      isDragging = false;
+    }
+  });
+
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
     stats.update();
     renderer.render(scene, camera);
-    console.log(mouse.x, mouse.y);
+    // console.log(mouse.x, mouse.y);
     if (concerned_element) {
       raycaster.setFromCamera(mouse, camera);
+      raycaster.params.Points.threshold = 0.1;
+      raycaster.params.Line.threshold = 0.1;
+
       const intersection = raycaster.intersectObject(concerned_element);
 
       if (intersection.length > 0) {
-        const intersectedObject = intersection[0].object;
+        let intersectedObject = intersection[0].object;
         console.log(intersectedObject.name);
-        intersectedObject.material.color.set("Blue");
 
-        // Set label's content and position
-        elementDiv.textContent = intersectedObject.name;
-        elementLabel.position.set(mouse.x, mouse.y, 0);
-        // elementLabel.position.copy(intersection[0].point);
-        // elementLabel.position.x += 0.1; // Slightly to the right of the cursor
-
-        // Add the label to the CSS2DRenderer's scene
-        labelRenderer.domElement.appendChild(elementDiv);
-      } else {
-        // Hide the label when not intersecting
-        if (elementDiv.parentNode == labelRenderer.domElement) {
-          labelRenderer.domElement.removeChild(elementDiv);
+        if (mouseClicked && !isDragging) {
+          let color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+          intersectedObject.material.color.set(color);
+          console.log(color + " on " + intersectedObject.name);
+          mouseClicked = false;
         }
+
+        const offsetX = 15; // Adjust as needed
+        const offsetY = -15; // Adjust as needed
+
+        tooltipElement.textContent = intersectedObject.name;
+        tooltipElement.style.display = "block";
+        tooltipElement.style.left = `${
+          ((mouse.x + 1) * window.innerWidth) / 2 + offsetX
+        }px`;
+        tooltipElement.style.top = `${
+          ((-mouse.y + 1) * window.innerHeight) / 2 + offsetY
+        }px`;
+      } else {
+        tooltipElement.style.display = "none";
       }
     }
     // if (
