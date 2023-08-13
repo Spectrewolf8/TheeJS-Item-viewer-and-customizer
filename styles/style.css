@@ -8,7 +8,7 @@
   align-items: center;
   min-height: 100vh;
 }
-.tooltip{
+.tooltip {
   position: absolute;
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
@@ -26,10 +26,28 @@
   z-index: 100;
   display: block;
 
-  color: rgb(134, 18, 228);
+  color: rgb(223, 223, 223);
   font: bold;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 30px;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Regular", sans-serif;
+  font-size: 20px;
+}
+#colorPickerTitle {
+  font: bold;
+  color: aliceblue;
+  position: absolute;
+  top: 10px;
+  right: 55px;
+  width: 50px;
+  height: 50px;
+}
+
+#colorPicker {
+  position: absolute;
+  top: 35px;
+  right: 10px;
+  height: 100px;
+  width: 100px;
+  margin-right: 20px;
 }
 
 /*
