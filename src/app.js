@@ -148,6 +148,16 @@
 //   document.getElementById("container").appendChild(warning);
 // }
 
+// if (
+//   typeof intersection != undefined &&
+//   typeof intersection[0] != undefined
+// ) {
+//   console.log(intersection[0].object["name"]);
+//   concerned_element
+//     .getObjectByName(intersection[0].object["name"])
+//     .material.color.set("Blue");
+// }
+
 // // setTimeout(() => {
 // //   concerned_element
 // //     .getObjectByName("L_SHOE_L_Shoe_0014")
@@ -179,13 +189,6 @@ function init() {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
-
-  //setting up CSS2DRenderer for labels
-  // const labelRenderer = new CSS2DRenderer();
-  // labelRenderer.setSize(window.innerWidth, window.innerHeight);
-  // labelRenderer.domElement.style.position = "absolute";
-  // labelRenderer.domElement.style.top = "0px";
-  // document.body.appendChild(labelRenderer.domElement);
 
   //setting up stats monitor
   const stats = new Stats();
@@ -308,6 +311,27 @@ function init() {
       isDragging = false;
     }
   });
+  /*children: Array(10) [ {…}, {…}, {…}, … ]
+​​
+0: Object { isObject3D: true, uuid: "7857146e-7f0b-4bb5-b550-9a86c115ea10", name: "shoes_R", … }
+​​
+1: Object { isObject3D: true, uuid: "c35cf5af-1b06-4b3e-b021-88a96c09c67a", name: "sole_front_back___R_", … }
+​​
+2: Object { isObject3D: true, uuid: "7b1e684f-7cbd-4824-87cb-f61000379c30", name: "laces_R", … }
+​​
+3: Object { isObject3D: true, uuid: "bb2b2b58-7dc2-42c9-b1a6-e654a8dcce4b", name: "sole__body___R__", … }
+​​
+4: Object { isObject3D: true, uuid: "a18f6ba6-8496-4a92-9609-1b3992b041e3", name: "laces__L", … }
+​​
+5: Object { isObject3D: true, uuid: "77d57788-d36d-4ccb-a85d-ecfeb908914a", name: "shoes_L", … }
+​​
+6: Object { isObject3D: true, uuid: "56702607-08e8-49ac-8b9e-67130855ab6c", name: "sole__body___L", … }
+​​
+7: Object { isObject3D: true, uuid: "8e1571ba-c71d-49c7-ab46-bad45cd762f2", name: "sole_front_back___L_", … }
+​​
+8: Object { isObject3D: true, uuid: "863678f5-fa05-4018-a08e-d38d8cb94a74", name: "shoes_tag__R", … }
+​​
+9: Object { isObject3D: true, uuid: "7f495863-2bac-48bd-896c-db1c1462be87", name: "shoes_tag__L", … } */
 
   function animate() {
     requestAnimationFrame(animate);
@@ -324,19 +348,12 @@ function init() {
 
       if (intersection.length > 0) {
         let intersectedObject = intersection[0].object;
-        console.log(intersectedObject.name);
+        // console.log(intersectedObject.name);
 
-        if (mouseClicked && !isDragging) {
-          let color = "#" + Math.floor(Math.random() * 16777215).toString(16);
-          intersectedObject.material.color.set(color);
-          console.log(color + " on " + intersectedObject.name);
-          mouseClicked = false;
-        }
-
+        //handling tooltip behavior
         const offsetX = 15; // Adjust as needed
         const offsetY = -15; // Adjust as needed
 
-        tooltipElement.textContent = intersectedObject.name;
         tooltipElement.style.display = "block";
         tooltipElement.style.left = `${
           ((mouse.x + 1) * window.innerWidth) / 2 + offsetX
@@ -344,19 +361,94 @@ function init() {
         tooltipElement.style.top = `${
           ((-mouse.y + 1) * window.innerHeight) / 2 + offsetY
         }px`;
+
+        if (
+          intersectedObject.name == "L_SHOE_L_Shoe_0014_1" ||
+          intersectedObject.name == "L_SHOE_L_Shoe_0008_1"
+        ) {
+          tooltipElement.textContent = "Sole Tag";
+        } else if (
+          intersectedObject.name == "L_SHOE_L_Shoe_0014" ||
+          intersectedObject.name == "L_SHOE_L_Shoe_0008"
+        ) {
+          tooltipElement.textContent = "Shoe Body";
+        } else if (
+          intersectedObject.name == "sole_front_back___L_" ||
+          intersectedObject.name == "sole_front_back___R_"
+        ) {
+          tooltipElement.textContent = "Sole Tip and Back";
+        } else if (
+          intersectedObject.name == "shoes_tag__R" ||
+          intersectedObject.name == "shoes_tag__L"
+        ) {
+          tooltipElement.textContent = "Shoe Tag";
+        } else if (
+          intersectedObject.name == "laces__L" ||
+          intersectedObject.name == "laces_R"
+        ) {
+          tooltipElement.textContent = "Laces";
+        } else if (
+          intersectedObject.name == "sole__body___R__" ||
+          intersectedObject.name == "sole__body___L"
+        ) {
+          tooltipElement.textContent = "Sole Body";
+        }
+
+        //handling actions on click
+        if (mouseClicked && !isDragging) {
+          let color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+          intersectedObject.material.color.set(color);
+          console.log(color + " on " + intersectedObject.name);
+          mouseClicked = false;
+
+          if (tooltipElement.textContent == "Sole Tag") {
+            concerned_element
+              .getObjectByName("L_SHOE_L_Shoe_0014_1")
+              .material.color.set(color);
+            concerned_element
+              .getObjectByName("L_SHOE_L_Shoe_0008_1")
+              .material.color.set(color);
+          } else if (tooltipElement.textContent == "Shoe Body") {
+            concerned_element
+              .getObjectByName("L_SHOE_L_Shoe_0014")
+              .material.color.set(color);
+            concerned_element
+              .getObjectByName("L_SHOE_L_Shoe_0008")
+              .material.color.set(color);
+          } else if (tooltipElement.textContent == "Sole Tip and Back") {
+            concerned_element
+              .getObjectByName("sole_front_back___R_")
+              .material.color.set(color);
+            concerned_element
+              .getObjectByName("sole_front_back___L_")
+              .material.color.set(color);
+          } else if (tooltipElement.textContent == "Shoe Tag") {
+            concerned_element
+              .getObjectByName("shoes_tag__R")
+              .material.color.set(color);
+            concerned_element
+              .getObjectByName("shoes_tag__L")
+              .material.color.set(color);
+          } else if (tooltipElement.textContent == "Laces") {
+            concerned_element
+              .getObjectByName("laces__L")
+              .material.color.set(color);
+            concerned_element
+              .getObjectByName("laces_R")
+              .material.color.set(color);
+          } else if (tooltipElement.textContent == "Sole Body") {
+            concerned_element
+              .getObjectByName("sole__body___R__")
+              .material.color.set(color);
+            concerned_element
+              .getObjectByName("sole__body___L")
+              .material.color.set(color);
+          }
+        }
       } else {
         tooltipElement.style.display = "none";
       }
     }
-    // if (
-    //   typeof intersection != undefined &&
-    //   typeof intersection[0] != undefined
-    // ) {
-    //   console.log(intersection[0].object["name"]);
-    //   concerned_element
-    //     .getObjectByName(intersection[0].object["name"])
-    //     .material.color.set("Blue");
-    // }
   }
 
   if (WebGL.isWebGLAvailable()) {
